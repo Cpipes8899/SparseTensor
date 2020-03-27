@@ -333,5 +333,3 @@ int main()
 	atranspose.print(); 
 } 
 
-// This code is contributed 
-// by Bharath Vignesh J K 
