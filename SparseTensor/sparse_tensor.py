@@ -21,7 +21,7 @@ output3 = tf.matmul(d, c, a_is_sparse=True)
 print("\nDense multiplication with is_sparse flag: \n")
 print(output3)
 
-
+# Work in Progress
 # def single_mode_dot(A, B):
 #     """
 #     Dot product between two rank 2 matrices. Deals automatically with either A
