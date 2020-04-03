@@ -1,5 +1,4 @@
 import tensorflow as tf
-import numpy
 
 a = tf.sparse.SparseTensor(indices=[[0, 0], [1, 2]], values=[1, 2], dense_shape=[4, 4])
 
