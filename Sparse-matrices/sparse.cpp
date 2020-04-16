@@ -1,335 +1,485 @@
-// C++ code to perform add, multiply 
-// and transpose on sparse matrices 
-#include <iostream> 
-using namespace std; 
+// C++ code to perform add, multiply
+// and transpose on sparse tensors.
+//Also perform add and multiply on dense tensors.
+//Can perform multiplication on 1 sparse and 1 dense tensor.
+#include <iostream>
+using namespace std;
 
-class sparse_matrix 
-{ 
+class tensor
+{
+	//For sparse tensors
 
-	// Maximum number of elements in matrix 
-	const static int MAX = 100; 
+	// Maximum number of elements in sparse tensor
+	const static int MAX = 100;
 
-	// Double-pointer initialized by 
-	// the constructor to store 
-	// the triple-represented form 
-	int **data; 
+	// Double-pointer initialized by
+	// the constructor to store
+	// the triple-represented form
+	int **data;
 
-	// dimensions of matrix 
-	int row, col; 
+	// dimensions of tensor
+	int row, col;
 
-	// total number of elements in matrix 
-	int len; 
+	// total number of elements in tensor
+	int len;
 
-public: 
-	sparse_matrix(int r, int c) 
-	{ 
+public:
+	//Constructor for sparse tensor with 2 dimensions
+	tensor(int r, int c)
+	{
 
-		// initialize row 
-		row = r; 
+		// initialize row
+		row = r;
 
-		// initialize col 
-		col = c; 
+		// initialize col
+		col = c;
 
-		// initialize length to 0 
-		len = 0; 
+		// initialize length to 0
+		len = 0;
 
-		//Array of Pointer to make a matrix 
-		data = new int *[MAX]; 
+		//Array of Pointer to make a tensor
+		data = new int *[MAX];
 
-		// Array representation 
-		// of sparse matrix 
-		//[,0] represents row 
-		//[,1] represents col 
-		//[,2] represents value 
-		for (int i = 0; i < MAX; i++) 
-			data[i] = new int[3]; 
-	} 
+		// Array representation
+		// of sparse tensor
+		//[,0] represents row
+		//[,1] represents col
+		//[,2] represents value
+		for (int i = 0; i < MAX; i++)
+			data[i] = new int[3];
+	}
 
-	// insert elements into sparse matrix 
-	void insert(int r, int c, int val) 
-	{ 
+	//Overloaded constructor for dense tensor with 2 dimensions
+	tensor(int r, int c, int placeholder)
+	{
 
-		// invalid entry 
-		if (r > row || c > col) 
-		{ 
-			cout << "Wrong entry"; 
-		} 
+		// initialize row
+		row = r;
+
+		// initialize col
+		col = c;
+
+		// initialize length to 0
+		len = 0;
+
+		//Array of Pointer to make a tensor
+		data = new int *[r];
+
+		// Array representation
+		// of dense tensor
+		for (int i = 0; i < row; i++)
+			data[i] = new int[c];
+
+		//initialize data
+		for (int i = 0; i < row; i++)
+			{
+				for (int j = 0; j < col; j++)
+				{
+					data[i][j] = 0;
+				}
+			}
+	}
+
+	// insert elements into sparse tensor
+	void sparse_insert_2D(int r, int c, int val)
+	{
+
+		// invalid entry
+		if (r > row || c > col)
+		{
+			cout << "Wrong entry";
+		}
 		else
-		{ 
+		{
 
-			// insert row value 
-			data[len][0] = r; 
+			// insert row value
+			data[len][0] = r;
 
-			// insert col value 
-			data[len][1] = c; 
+			// insert col value
+			data[len][1] = c;
 
-			// insert element's value 
-			data[len][2] = val; 
+			// insert element's value
+			data[len][2] = val;
 
-			// increment number of data in matrix 
-			len++; 
-		} 
-	} 
+			// increment number of data in tensor
+			len++;
+		}
+	}
 
-	void add(sparse_matrix b) 
-	{ 
+	void sparse_add_2D(tensor b)
+	{
 
-		// if matrices don't have same dimensions 
-		if (row != b.row || col != b.col) 
-		{ 
-			cout << "Matrices can't be added"; 
-		} 
+		// if tensors don't have same dimensions
+		if (row != b.row || col != b.col)
+		{
+			cout << "Tensors can't be added";
+		}
 
 		else
-		{ 
-			int apos = 0, bpos = 0; 
-			sparse_matrix result(row, col); 
+		{
+			int apos = 0, bpos = 0;
+			tensor result(row, col);
 
-			while (apos < len && bpos < b.len) 
-			{ 
+			while (apos < len && bpos < b.len)
+			{
 
-				// if b's row and col is smaller 
-				if (data[apos][0] > b.data[bpos][0] || 
-				(data[apos][0] == b.data[bpos][0] && 
-					data[apos][1] > b.data[bpos][1])) 
+				// if b's row and col is smaller
+				if (data[apos][0] > b.data[bpos][0] ||
+					(data[apos][0] == b.data[bpos][0] &&
+					 data[apos][1] > b.data[bpos][1]))
 
-				{ 
+				{
 
-					// insert smaller value into result 
-					result.insert(b.data[bpos][0], 
-								b.data[bpos][1], 
-								b.data[bpos][2]); 
+					// insert smaller value into result
+					result.sparse_insert_2D(b.data[bpos][0],
+									 b.data[bpos][1],
+									 b.data[bpos][2]);
 
-					bpos++; 
-				} 
+					bpos++;
+				}
 
-				// if a's row and col is smaller 
-				else if (data[apos][0] < b.data[bpos][0] || 
-						(data[apos][0] == b.data[bpos][0] && 
-						data[apos][1] < b.data[bpos][1])) 
+				// if a's row and col is smaller
+				else if (data[apos][0] < b.data[bpos][0] ||
+						 (data[apos][0] == b.data[bpos][0] &&
+						  data[apos][1] < b.data[bpos][1]))
 
-				{ 
+				{
 
-					// insert smaller value into result 
-					result.insert(data[apos][0], 
-								data[apos][1], 
-								data[apos][2]); 
+					// insert smaller value into result
+					result.sparse_insert_2D(data[apos][0],
+									 data[apos][1],
+									 data[apos][2]);
 
-					apos++; 
-				} 
+					apos++;
+				}
 
 				else
-				{ 
+				{
 
-					// add the values as row and col is same 
-					int addedval = data[apos][2] + 
-								b.data[bpos][2]; 
+					// add the values as row and col is same
+					int addedval = data[apos][2] +
+								   b.data[bpos][2];
 
-					if (addedval != 0) 
-						result.insert(data[apos][0], 
-									data[apos][1], 
-									addedval); 
-					// then insert 
-					apos++; 
-					bpos++; 
-				} 
-			} 
+					if (addedval != 0)
+						result.sparse_insert_2D(data[apos][0],
+										 data[apos][1],
+										 addedval);
+					// then insert
+					apos++;
+					bpos++;
+				}
+			}
 
-			// insert remaining elements 
-			while (apos < len) 
-				result.insert(data[apos][0], 
-							data[apos][1], 
-							data[apos++][2]); 
+			// insert remaining elements
+			while (apos < len)
+				result.sparse_insert_2D(data[apos][0],
+								 data[apos][1],
+								 data[apos++][2]);
 
-			while (bpos < b.len) 
-				result.insert(b.data[bpos][0], 
-							b.data[bpos][1], 
-							b.data[bpos++][2]); 
+			while (bpos < b.len)
+				result.sparse_insert_2D(b.data[bpos][0],
+								 b.data[bpos][1],
+								 b.data[bpos++][2]);
 
-			// print result 
-			result.print(); 
-		} 
-	} 
+			// print result
+			result.sparse_print();
+		}
+	}
 
-	sparse_matrix transpose() 
-	{ 
+	tensor transpose_2D()
+	{
 
-		// new matrix with inversed row X col 
-		sparse_matrix result(col, row); 
+		// new tensor with inversed row X col
+		tensor result(col, row);
 
-		// same number of elements 
-		result.len = len; 
+		// same number of elements
+		result.len = len;
 
-		// to count number of elements in each column 
-		int *count = new int[col + 1]; 
+		// to count number of elements in each column
+		int *count = new int[col + 1];
 
-		// initialize all to 0 
-		for (int i = 1; i <= col; i++) 
-			count[i] = 0; 
+		// initialize all to 0
+		for (int i = 1; i <= col; i++)
+			count[i] = 0;
 
-		for (int i = 0; i < len; i++) 
-			count[data[i][1]]++; 
+		for (int i = 0; i < len; i++)
+			count[data[i][1]]++;
 
-		int *index = new int[col + 1]; 
+		int *index = new int[col + 1];
 
-		// to count number of elements having 
-		// col smaller than particular i 
+		// to count number of elements having
+		// col smaller than particular i
 
-		// as there is no col with value < 0 
-		index[0] = 0; 
+		// as there is no col with value < 0
+		index[0] = 0;
 
-		// initialize rest of the indices 
-		for (int i = 1; i <= col; i++) 
+		// initialize rest of the indices
+		for (int i = 1; i <= col; i++)
 
-			index[i] = index[i - 1] + count[i - 1]; 
+			index[i] = index[i - 1] + count[i - 1];
 
-		for (int i = 0; i < len; i++) 
-		{ 
+		for (int i = 0; i < len; i++)
+		{
 
-			// insert a data at rpos and 
-			// increment its value 
-			int rpos = index[data[i][1]]++; 
+			// insert a data at rpos and
+			// increment its value
+			int rpos = index[data[i][1]]++;
 
-			// transpose row=col 
-			result.data[rpos][0] = data[i][1]; 
+			// transpose row=col
+			result.data[rpos][0] = data[i][1];
 
-			// transpose col=row 
-			result.data[rpos][1] = data[i][0]; 
+			// transpose col=row
+			result.data[rpos][1] = data[i][0];
 
-			// same value 
-			result.data[rpos][2] = data[i][2]; 
-		} 
+			// same value
+			result.data[rpos][2] = data[i][2];
+		}
 
-		// the above method ensures 
-		// sorting of transpose matrix 
-		// according to row-col value 
-		return result; 
-	} 
+		// the above method ensures
+		// sorting of transpose tensor
+		// according to row-col value
+		return result;
+	}
 
-	void multiply(sparse_matrix b) 
-	{ 
-		if (col != b.row) 
-		{ 
+	void sparse_multiply_2D(tensor b)
+	{
+		if (col != b.row)
+		{
 
-			// Invalid multiplication 
-			cout << "Can't multiply, Invalid dimensions"; 
-			return; 
-		} 
+			// Invalid multiplication
+			cout << "Can't multiply tensors, Invalid dimensions";
+			return;
+		}
 
-		// transpose b to compare row 
-		// and col values and to add them at the end 
-		b = b.transpose(); 
-		int apos, bpos; 
+		// transpose b to compare row
+		// and col values and to add them at the end
+		b = b.transpose_2D();
+		int apos, bpos;
 
-		// result matrix of dimension row X b.col 
-		// however b has been transposed, 
-		// hence row X b.row 
-		sparse_matrix result(row, b.row); 
+		// result tensor of dimension row X b.col
+		// however b has been transposed,
+		// hence row X b.row
+		tensor result(row, b.row);
 
-		// iterate over all elements of A 
-		for (apos = 0; apos < len;) 
-		{ 
+		// iterate over all elements of A
+		for (apos = 0; apos < len;)
+		{
 
-			// current row of result matrix 
-			int r = data[apos][0]; 
+			// current row of result tensor
+			int r = data[apos][0];
 
-			// iterate over all elements of B 
-			for (bpos = 0; bpos < b.len;) 
-			{ 
+			// iterate over all elements of B
+			for (bpos = 0; bpos < b.len;)
+			{
 
-				// current column of result matrix 
-				// data[,0] used as b is transposed 
-				int c = b.data[bpos][0]; 
+				// current column of result tensor
+				// data[,0] used as b is transposed
+				int c = b.data[bpos][0];
 
-				// temporary pointers created to add all 
-				// multiplied values to obtain current 
-				// element of result matrix 
-				int tempa = apos; 
-				int tempb = bpos; 
+				// temporary pointers created to add all
+				// multiplied values to obtain current
+				// element of result tensor
+				int tempa = apos;
+				int tempb = bpos;
 
-				int sum = 0; 
+				int sum = 0;
 
-				// iterate over all elements with 
-				// same row and col value 
-				// to calculate result[r] 
-				while (tempa < len && data[tempa][0] == r && 
-					tempb < b.len && b.data[tempb][0] == c) 
-				{ 
-					if (data[tempa][1] < b.data[tempb][1]) 
+				// iterate over all elements with
+				// same row and col value
+				// to calculate result[r]
+				while (tempa < len && data[tempa][0] == r &&
+					   tempb < b.len && b.data[tempb][0] == c)
+				{
+					if (data[tempa][1] < b.data[tempb][1])
 
-						// skip a 
-						tempa++; 
+						// skip a
+						tempa++;
 
-					else if (data[tempa][1] > b.data[tempb][1]) 
+					else if (data[tempa][1] > b.data[tempb][1])
 
-						// skip b 
-						tempb++; 
+						// skip b
+						tempb++;
 					else
 
-						// same col, so multiply and increment 
-						sum += data[tempa++][2] * 
-							b.data[tempb++][2]; 
-				} 
+						// same col, so multiply and increment
+						sum += data[tempa++][2] *
+							   b.data[tempb++][2];
+				}
 
-				// insert sum obtained in result[r] 
-				// if its not equal to 0 
-				if (sum != 0) 
-					result.insert(r, c, sum); 
+				// insert sum obtained in result[r]
+				// if its not equal to 0
+				if (sum != 0)
+					result.sparse_insert_2D(r, c, sum);
 
-				while (bpos < b.len && 
-					b.data[bpos][0] == c) 
+				while (bpos < b.len &&
+					   b.data[bpos][0] == c)
 
-					// jump to next column 
-					bpos++; 
-			} 
-			while (apos < len && data[apos][0] == r) 
+					// jump to next column
+					bpos++;
+			}
+			while (apos < len && data[apos][0] == r)
 
-				// jump to next row 
-				apos++; 
-		} 
-		result.print(); 
-	} 
+				// jump to next row
+				apos++;
+		}
+		result.sparse_print();
+	}
 
-	// printing matrix 
-	void print() 
-	{ 
-		cout << "\nDimension: " << row << "x" << col; 
-		cout << "\nSparse Matrix: \nRow\tColumn\tValue\n"; 
+	// printing tensor
+	void sparse_print()
+	{
+		cout << "\nDimension: " << row << "x" << col;
+		cout << "\nSparse Matrix: \nRow\tColumn\tValue\n";
 
-		for (int i = 0; i < len; i++) 
-		{ 
-			cout << data[i][0] << "\t " << data[i][1] 
-				<< "\t " << data[i][2] << endl; 
-		} 
-	} 
-}; 
+		for (int i = 0; i < len; i++)
+		{
+			cout << data[i][0] << "\t " << data[i][1]
+				 << "\t " << data[i][2] << endl;
+		}
+	}
 
-// Driver Code 
-int main() 
-{ 
+	//Method to add two dense tensors
+	//The calling tensor is updated, the parameter tensor is unchanged
+	void dense_tensor_add_2D(tensor b)
+	{
 
-	// create two sparse matrices and insert values 
-	sparse_matrix a(4, 4); 
-	sparse_matrix b(4, 4); 
+		// if tensors don't have same dimensions
+		if (row != b.row || col != b.col)
+		{
+			cout << "Tensors can't be added";
+		}
 
-	a.insert(1, 2, 10); 
-	a.insert(1, 4, 12); 
-	a.insert(3, 3, 5); 
-	a.insert(4, 1, 15); 
-	a.insert(4, 2, 12); 
-	b.insert(1, 3, 8); 
-	b.insert(2, 4, 23); 
-	b.insert(3, 3, 9); 
-	b.insert(4, 1, 20); 
-	b.insert(4, 2, 25); 
+		else
+		{
+			for (int i = 0; i < row; i++)
+			{
+				for (int j = 0; j < col; j++)
+				{
+					data[i][j] = (data[i][j] + b.data[i][j]);
+				}
+			}
+		}
+	}
 
-	// Output result 
-	cout << "Addition: "; 
-	a.add(b); 
-	cout << "\nMultiplication: "; 
-	a.multiply(b); 
-	cout << "\nTranspose: "; 
-	sparse_matrix atranspose = a.transpose(); 
-	atranspose.print(); 
-} 
+	//Method to multiply two dense tensors
+	//The calling tensor is updated, the parameter tensor is unchanged
+	void dense_tensor_multiply_2D(tensor b){
+		if (col != b.row)
+		{
+			// Invalid multiplication
+			cout << "Can't multiply tensors, Invalid dimensions";
+			return;
+		}
 
+		  for(int i = 0; i < row; i++){
+    		for(int j = 0; j < b.col; j++){
+      			for(int k = 0; k < col; k++){
+
+					data[i][j] += (data[i][k] * b.data[k][j]);
+	
+       			}
+      		}
+     	}
+	}
+
+
+	void convert_sparse_to_dense_2D(){
+
+		//Make a temporary tensor to hold values from sparse representation
+		int **temp_data;
+
+		//Array of Pointer to make a tensor
+		temp_data = new int *[row];
+
+		// Array representation
+		// of dense tensor
+		for (int i = 0; i < row; i++)
+			temp_data[i] = new int[col];
+
+		//initialize temp_data
+		for (int i = 0; i < row; i++)
+			{
+				for (int j = 0; j < col; j++)
+				{
+					temp_data[i][j] = 0;
+				}
+			}
+
+
+		for (int i = 0; i < len; i++)
+		{
+			//Stores the value from the sparse representation into temp_data
+			temp_data[data[i][0]][data[i][1]] = data[i][2];
+		}
+
+		//Re-initalize data as a 2D dense tensor
+
+		//Array of Pointer to make a tensor
+		data = new int *[row];
+
+		// Array representation
+		// of dense tensor
+		for (int i = 0; i < row; i++)
+			data[i] = new int[col];
+
+		//Copy temp_data to data
+		for (int i = 0; i < row; i++)
+			{
+				for (int j = 0; j < col; j++)
+				{
+					data[i][j] = temp_data[i][j];
+				}
+			}
+
+	}
+
+	//Method to insert values into a dense matrix
+	void dense_insert_2D(int r, int c, int val){
+		if(r > row || c > col){
+			cout << "Can't insert, Invalid dimensions";
+		}
+		else{
+		data[r][c] = val;
+		}
+	}
+
+	//Method to multiply a sparse tensor with a dense tensor
+	//Must be used on a sparse tensor
+	//Calling tensor is now a dense tensor
+	void sparse_dense_multiply_2D(tensor b){
+		convert_sparse_to_dense_2D();
+		dense_tensor_multiply_2D(b);
+	}
+
+
+}; //end tensor class 
+
+// Driver Code
+int main()
+{
+
+	// create two sparse 2D tensors and insert values
+	tensor a(4, 4);
+	tensor b(4, 4);
+
+	a.sparse_insert_2D(1, 2, 10);
+	a.sparse_insert_2D(1, 4, 12);
+	a.sparse_insert_2D(3, 3, 5);
+	a.sparse_insert_2D(4, 1, 15);
+	a.sparse_insert_2D(4, 2, 12);
+
+	b.sparse_insert_2D(1, 3, 8);
+	b.sparse_insert_2D(2, 4, 23);
+	b.sparse_insert_2D(3, 3, 9);
+	b.sparse_insert_2D(4, 1, 20);
+	b.sparse_insert_2D(4, 2, 25);
+
+	// Output result
+	cout << "Addition: ";
+	a.sparse_add_2D(b);
+	cout << "\nMultiplication: ";
+	a.sparse_multiply_2D(b);
+	cout << "\nTranspose: ";
+	tensor atranspose = a.transpose_2D();
+	atranspose.sparse_print();
+}
