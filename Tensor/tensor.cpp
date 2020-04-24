@@ -5,7 +5,30 @@
 #include <iostream>
 using namespace std;
 
-class tensor
+
+class Tensor
+{
+
+
+public:
+	//virtual void sparse_insert(int r, int c, int val) ;
+	//virtual void sparse_add(Tensor2D b);
+	//virtual void transpose();
+	//virtual void sparse_multiply(Tensor2D b);
+	//virtual void sparse_print();
+	//virtual void dense_add(Tensor2D b);
+	//virtual void dense_multiply(Tensor2D b);
+	//virtual void dense_insert(int r, int c, int val);
+	//virtual void convert_sparse_to_dense();
+	//virtual void sparse_dense_multiply(Tensor2D b);
+	//virtual void print_dense();
+	//virtual void convert_dense_to_sparse();
+};
+
+
+
+
+class Tensor2D: public Tensor
 {
 	//For sparse tensors
 
@@ -25,7 +48,7 @@ class tensor
 
 public:
 	//Constructor for sparse tensor with 2 dimensions
-	tensor(int r, int c)
+	Tensor2D(int r, int c)
 	{
 
 		// initialize row
@@ -50,7 +73,7 @@ public:
 	}
 
 	//Overloaded constructor for dense tensor with 2 dimensions
-	tensor(int r, int c, int placeholder)
+	Tensor2D(int r, int c, int placeholder)
 	{
 
 		// initialize row
@@ -81,7 +104,7 @@ public:
 	}
 
 	// insert elements into sparse tensor
-	void sparse_insert_2D(int r, int c, int val)
+	void sparse_insert(int r, int c, int val)
 	{
 
 		// invalid entry
@@ -106,7 +129,7 @@ public:
 		}
 	}
 
-	void sparse_add_2D(tensor b)
+	void sparse_add(Tensor2D b)
 	{
 
 		// if tensors don't have same dimensions
@@ -118,7 +141,7 @@ public:
 		else
 		{
 			int apos = 0, bpos = 0;
-			tensor result(row, col);
+			Tensor2D result(row, col);
 
 			while (apos < len && bpos < b.len)
 			{
@@ -131,7 +154,7 @@ public:
 				{
 
 					// insert smaller value into result
-					result.sparse_insert_2D(b.data[bpos][0],
+					result.sparse_insert(b.data[bpos][0],
 									 b.data[bpos][1],
 									 b.data[bpos][2]);
 
@@ -146,7 +169,7 @@ public:
 				{
 
 					// insert smaller value into result
-					result.sparse_insert_2D(data[apos][0],
+					result.sparse_insert(data[apos][0],
 									 data[apos][1],
 									 data[apos][2]);
 
@@ -161,7 +184,7 @@ public:
 								   b.data[bpos][2];
 
 					if (addedval != 0)
-						result.sparse_insert_2D(data[apos][0],
+						result.sparse_insert(data[apos][0],
 										 data[apos][1],
 										 addedval);
 					// then insert
@@ -172,12 +195,12 @@ public:
 
 			// insert remaining elements
 			while (apos < len)
-				result.sparse_insert_2D(data[apos][0],
+				result.sparse_insert(data[apos][0],
 								 data[apos][1],
 								 data[apos++][2]);
 
 			while (bpos < b.len)
-				result.sparse_insert_2D(b.data[bpos][0],
+				result.sparse_insert(b.data[bpos][0],
 								 b.data[bpos][1],
 								 b.data[bpos++][2]);
 
@@ -186,7 +209,7 @@ public:
 		}
 	}
 
-	void transpose_2D()
+	void transpose()
 	{
         int **temp_data;
         temp_data = new int *[MAX];
@@ -211,7 +234,7 @@ public:
         }
 	}
 
-	void sparse_multiply_2D(tensor b)
+	void sparse_multiply(Tensor2D b)
 	{
 		if (col != b.row)
 		{
@@ -220,11 +243,11 @@ public:
 			return;
 		}
 
-        convert_sparse_to_dense_2D();
-        b.convert_sparse_to_dense_2D();
-        dense_multiply_2D(b);
-        convert_dense_to_sparse_2D();
-        b.convert_dense_to_sparse_2D();
+        convert_sparse_to_dense();
+        b.convert_sparse_to_dense();
+        dense_multiply(b);
+        convert_dense_to_sparse();
+        b.convert_dense_to_sparse();
 	}
 
 	// printing tensor
@@ -242,7 +265,7 @@ public:
 
 	//Method to add two dense tensors
 	//The calling tensor is updated, the parameter tensor is unchanged
-	void dense_add_2D(tensor b)
+	void dense_add(Tensor2D b)
 	{
 
 		// if tensors don't have same dimensions
@@ -265,7 +288,7 @@ public:
 
 	//Method to multiply two dense tensors
 	//The calling tensor is updated, the parameter tensor is unchanged
-	void dense_multiply_2D(tensor b){
+	void dense_multiply(Tensor2D b){
 		if (col != b.row)
 		{
 			// Invalid multiplication
@@ -285,7 +308,7 @@ public:
 	}
 
 
-	void convert_sparse_to_dense_2D(){
+	void convert_sparse_to_dense(){
 
 		//Make a temporary tensor to hold values from sparse representation
 		int **temp_data;
@@ -337,7 +360,7 @@ public:
 	}
 
 	//Method to insert values into a dense matrix
-	void dense_insert_2D(int r, int c, int val){
+	void dense_insert(int r, int c, int val){
 		if(r > row || c > col){
 			cout << "Can't insert, Invalid dimensions";
 		}
@@ -349,13 +372,13 @@ public:
 	//Method to multiply a sparse tensor with a dense tensor
 	//Must be used on a sparse tensor
 	//Calling tensor is now a dense tensor
-	void sparse_dense_multiply_2D(tensor b){
-		convert_sparse_to_dense_2D();
-		dense_multiply_2D(b);
+	void sparse_dense_multiply(Tensor2D b){
+		convert_sparse_to_dense();
+		dense_multiply(b);
 	}
 
 
-    void print_dense_2D(){
+    void print_dense(){
         for (int i = 0; i < row; i++)
 			{
                 cout << "[";
@@ -373,7 +396,7 @@ public:
     }
 
 
-    void convert_dense_to_sparse_2D(){
+    void convert_dense_to_sparse(){
         int **temp_data;
 
 		//Array of Pointer to make a tensor
@@ -409,7 +432,7 @@ public:
             for(int j = 0; j < col; j++){
 
                 if(temp_data[i][j] != 0){
-                    sparse_insert_2D(i,j,temp_data[i][j]);
+                    sparse_insert(i,j,temp_data[i][j]);
                 }
 
             }
@@ -429,87 +452,87 @@ int main()
 {
 
 	// create two sparse 2D tensors and insert values
-	tensor a(4, 4);
-	tensor b(4, 4);
+	Tensor2D a(4, 4);
+	Tensor2D b(4, 4);
 
-	a.sparse_insert_2D(1, 2, 10);
-	a.sparse_insert_2D(1, 3, 12);
-	a.sparse_insert_2D(2, 3, 5);
-	a.sparse_insert_2D(3, 1, 15);
-	a.sparse_insert_2D(3, 2, 12);
+	a.sparse_insert(1, 2, 10);
+	a.sparse_insert(1, 3, 12);
+	a.sparse_insert(2, 3, 5);
+	a.sparse_insert(3, 1, 15);
+	a.sparse_insert(3, 2, 12);
 
-	b.sparse_insert_2D(1, 3, 8);
-	b.sparse_insert_2D(2, 3, 23);
-	b.sparse_insert_2D(3, 3, 9);
-	b.sparse_insert_2D(3, 1, 20);
-	b.sparse_insert_2D(3, 2, 25);
+	b.sparse_insert(1, 3, 8);
+	b.sparse_insert(2, 3, 23);
+	b.sparse_insert(3, 3, 9);
+	b.sparse_insert(3, 1, 20);
+	b.sparse_insert(3, 2, 25);
 
 	// Output result
 	cout << "Sparse Addition: ";
-	a.sparse_add_2D(b);
+	a.sparse_add(b);
 	cout << "\nSparse Multiplication: ";
-	a.sparse_multiply_2D(b);
+	a.sparse_multiply(b);
     a.sparse_print();
 	cout << "\nSparse Transpose: ";
-	b.transpose_2D();
+	b.transpose();
 	b.sparse_print();
 
 
     //Testing dense tensor operations
-    tensor c(4, 4, 0);
-    tensor d(4, 4, 0);
+    Tensor2D c(4, 4, 0);
+    Tensor2D d(4, 4, 0);
 
     //Initalize c
-    c.dense_insert_2D(0, 0, 1);
-    c.dense_insert_2D(0, 1, 2);
-    c.dense_insert_2D(0, 2, 3);
-    c.dense_insert_2D(0, 3, 4);
-    c.dense_insert_2D(1, 0, 5);
-    c.dense_insert_2D(1, 1, 6);
-    c.dense_insert_2D(1, 2, 7);
-    c.dense_insert_2D(1, 3, 8);
-    c.dense_insert_2D(2, 0, 9);
-    c.dense_insert_2D(2, 1, 1);
-    c.dense_insert_2D(2, 2, 2);
-    c.dense_insert_2D(2, 3, 3);
-    c.dense_insert_2D(3, 0, 4);
-    c.dense_insert_2D(3, 1, 4);
-    c.dense_insert_2D(3, 2, 4);
-    c.dense_insert_2D(3, 3, 4);
+    c.dense_insert(0, 0, 1);
+    c.dense_insert(0, 1, 2);
+    c.dense_insert(0, 2, 3);
+    c.dense_insert(0, 3, 4);
+    c.dense_insert(1, 0, 5);
+    c.dense_insert(1, 1, 6);
+    c.dense_insert(1, 2, 7);
+    c.dense_insert(1, 3, 8);
+    c.dense_insert(2, 0, 9);
+    c.dense_insert(2, 1, 1);
+    c.dense_insert(2, 2, 2);
+    c.dense_insert(2, 3, 3);
+    c.dense_insert(3, 0, 4);
+    c.dense_insert(3, 1, 4);
+    c.dense_insert(3, 2, 4);
+    c.dense_insert(3, 3, 4);
     cout << endl;
     cout << "Initalize c: " << endl;
-    c.print_dense_2D();
+    c.print_dense();
 
     //Initalize d
-    d.dense_insert_2D(0, 0, 6);
-    d.dense_insert_2D(0, 1, 5);
-    d.dense_insert_2D(0, 2, 1);
-    d.dense_insert_2D(0, 3, 2);
-    d.dense_insert_2D(1, 0, 1);
-    d.dense_insert_2D(1, 1, 3);
-    d.dense_insert_2D(1, 2, 1);
-    d.dense_insert_2D(1, 3, 4);
-    d.dense_insert_2D(2, 0, 9);
-    d.dense_insert_2D(2, 1, 1);
-    d.dense_insert_2D(2, 2, 2);
-    d.dense_insert_2D(2, 3, 3);
-    d.dense_insert_2D(3, 0, 2);
-    d.dense_insert_2D(3, 1, 1);
-    d.dense_insert_2D(3, 2, 2);
-    d.dense_insert_2D(3, 3, 1);
+    d.dense_insert(0, 0, 6);
+    d.dense_insert(0, 1, 5);
+    d.dense_insert(0, 2, 1);
+    d.dense_insert(0, 3, 2);
+    d.dense_insert(1, 0, 1);
+    d.dense_insert(1, 1, 3);
+    d.dense_insert(1, 2, 1);
+    d.dense_insert(1, 3, 4);
+    d.dense_insert(2, 0, 9);
+    d.dense_insert(2, 1, 1);
+    d.dense_insert(2, 2, 2);
+    d.dense_insert(2, 3, 3);
+    d.dense_insert(3, 0, 2);
+    d.dense_insert(3, 1, 1);
+    d.dense_insert(3, 2, 2);
+    d.dense_insert(3, 3, 1);
     cout << endl;
     cout << "Initialize d: " << endl;
-    d.print_dense_2D();
+    d.print_dense();
     cout << endl;
     cout << "Dense Addition: " << endl;
-	c.dense_add_2D(d);
-    c.print_dense_2D();
+	c.dense_add(d);
+    c.print_dense();
 	cout << "\nDense Multiplication: " <<endl;
-	c.dense_multiply_2D(d);
-    c.print_dense_2D();
+	c.dense_multiply(d);
+    c.print_dense();
     cout << endl;
     cout << "Sparse-Dense Multiplication: " <<endl;
-    b.sparse_dense_multiply_2D(d);
-    b.print_dense_2D();
+    b.sparse_dense_multiply(d);
+    b.print_dense();
     cout << endl;
 }
